@@ -1,4 +1,5 @@
 from utils import return_position
+from objetos import Board
 import sys
 
 #-------------------- DOCUMENTAÇÃO ---------------------  
@@ -23,7 +24,6 @@ def main():
     input_file = sys.argv[1]
     init_information = {}
     
-    # Abre arquivo
     with open(input_file,'r') as f:
         
         num_line = 0
@@ -44,27 +44,25 @@ def main():
                     has_wall = 0
                     init_information['wall'] = wall_positions
 
-            else:            
+            else:       
 
                 if(num_line == 0):
-                    init_information['width'] = int(line)
-                
+                    x,y = return_position(line) 
+                    init_information['dimensions'] = [x,y]
+             
                 elif(num_line == 1):
-                    init_information['height'] = int(line)
-                
-                elif(num_line == 2):
                     if(line.strip() == "yes"):
                         has_wall = 1
 
-                elif(num_line == 3):
+                elif(num_line == 2):
                     x,y = return_position(line)
                     init_information['taxi'] = [x,y]
                 
-                elif(num_line == 4):
+                elif(num_line == 3):
                     x,y = return_position(line)
                     init_information['person'] = [x,y]
                 
-                elif(num_line == 5):
+                elif(num_line == 4):
                     x,y = return_position(line)
                     init_information['destination'] = [x,y]
 
@@ -72,6 +70,9 @@ def main():
 
         print(init_information)
 
+        # --- Instancia tabuleiro ---
+        board = Board(init_information)
+        board.draw_board()
 
 if __name__ == '__main__': 
     main()
