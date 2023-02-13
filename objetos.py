@@ -47,6 +47,62 @@ class Passager:
     def taxi_leave_up(self):
         self.in_Taxi = False
 
+class Board:
+    def __init__(self, dimensions, string_board , taxi_position , passager_position):
+        
+        self.width = dimensions[0]
+        self.height = dimensions[1]
+        
+        self.str_map = string_board
+        
+        self.taxi = taxi_position
+        self.passager = passager_position
+        
+        # None = Root
+        self.father = None
+        self.sucessors = []
+
+    def ways_possibilities(self):
+        '''
+        De acordo com a posicão do taxi, verificar as possibilidades de caminho (possiveis sucessores do mapa)
+        '''
+        
+        line = 0;
+        column = 0
+
+        next_possible_positions = []
+
+        for tile in self.str_map:
+            
+            if(tile == '\n'):
+                line+=1
+                column = 0
+
+            else:
+                if (tile == 'T'):
+
+                    # Verificando Direita:
+                    if( self.str_map[line][column+1] != 'X') and (column + 1 < self.width):
+                        next_possible_positions.append([line, column+1])
+                    
+                    elif( self.str_map[line+1][column] != 'X') and (line + 1 < self.height):
+                        # Verificando Baixo
+                        next_possible_positions.append([line+1,column])
+                    
+                    elif (self.str_map[line][column-1] != 'X') and (column- 1 >= 0) :
+                        # Verificando Esquerda
+                        next_possible_positions.append([line, column - 1])
+
+                    elif (self.str_map[line-1, column] != 'X')  and (line - 1 >= 0):
+                        # Verificando Cima
+                        next_possible_positions.append([line-1, column]) 
+
+                column+=1
+
+        return next_possible_positions
+
+
+
 class State:
     '''
     Classe que representa o estado atual do ambiente, agente e tudo que compoem o problema.
