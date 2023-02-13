@@ -110,17 +110,26 @@ class State:
 
     def __init__(self, init_information):
 
-        # Dimensão
-        self.width = init_information['dimensions'][0]
-        self.height = init_information['dimensions'][1]
-
-        # Elementos do tabuleiro (x,y)
-        self.walls = init_information['wall']
-        self.taxi = init_information['taxi']
-        self.person = init_information['person']
+        # Elementos:
+        self.board = Board(init_information['dimensions'], init_information['root_map'] ,init_information['taxi'], init_information['person'])
+        self.taxi = Taxi(init_information['taxi'])
+        self.person = Passager(init_information['person'])
         self.destiny = init_information['destination']
 
-        # Estados
-        self.pick_up = False
-        self.in_destination = False
+        self.h = 0     # Heuristica 
+        self.g = 0     # State root
+        self.f = 0     # Custo total
+
+
+    def h_n(self, x1, y1 , x2 , y2):
+        # MANHATTAN distance
+        self.h = abs(x2 - x1) + abs(y2 - y1)
+
+    def g_n(self, past_value):
+        # Custo do Tile atual em relação ao inicio.
+        self.g = 1 + past_value
+
+    def f_n (self):
+        # Custo total do estado
+        self.f = self.h + self.g
 
