@@ -28,6 +28,25 @@ class Taxi:
         else:
             print('[ERROR] : Primeiro pegue o passageiro!')
 
+class Passager:
+    def __init__(self, start_posiiton):
+
+        self.x = start_posiiton[0]
+        self.y = start_posiiton[1]
+
+        self.in_Taxi  = False
+        self.in_destinantion = False
+    
+    def get_status(self):
+        print(f"Passager start on [{self.x} , {self.y}]")
+        print(f"In taxi : {self.in_Taxi}")
+    
+    def taxi_pick_up(self):
+        self.in_Taxi = True
+
+    def taxi_leave_up(self):
+        self.in_Taxi = False
+
 class State:
     '''
     Classe que representa o estado atual do ambiente, agente e tudo que compoem o problema.
