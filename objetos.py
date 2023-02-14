@@ -2,6 +2,7 @@
 #import gym
 
 from utils import *
+import copy
 
 class Taxi:
     def __init__(self, start_posiiton):
@@ -13,9 +14,8 @@ class Taxi:
         self.leave_passager = False
         
     def get_status(self):
-        print(f" Taxi on [{self.x} , {self.y}]")
-        print(f" with passager : {self.pick_up}")
-        print(f" leave passager in destination: {self.leave_passager}")
+        str_status = f" Taxi on [{self.x} , {self.y}]\n With passager : {self.pick_up}\n Leave passager in destination: {self.leave_passager}"
+        return str_status
 
     def get_passager(self):
         self.pick_up = True
@@ -38,9 +38,8 @@ class Passager:
         self.in_destinantion = False
     
     def get_status(self):
-        print(f"Passager on [{self.x} , {self.y}]")
-        print(f"In taxi : {self.in_Taxi}")
-        print(f"In destinantion : {self.in_destinantion}")
+        str_status = f" Passager on [{self.x} , {self.y}]\n In taxi : {self.in_Taxi}\n In destinantion : {self.in_destinantion}"
+        return str_status
     
     def taxi_pick_up(self):
         self.in_Taxi = True
@@ -70,6 +69,7 @@ class Board:
     def ways_possibilities(self):
         '''
         De acordo com a posicão do taxi, verificar as possibilidades de caminho (possiveis sucessores do mapa)
+        Retorno : [{ Taxi position , Board sucessor , direção }]
         '''
         
         next_possible_positions = []
@@ -78,23 +78,79 @@ class Board:
         y = self.taxi[1]
         #print(f" Taxi: x = {x} , y = {y}")
         
+        # Configuração do tabuleiro caso:
         # Direita
         if(x+1 < self.width):
             if(self.list_map[y][x+1] != "X"):
-                next_possible_positions.append([x+1,y])
+                
+                # Nova posicao do taxi
+                new_position = [x+1, y]
+                
+                # Atualiza lista auxiliar do mapa
+                aux_list_map = copy.deepcopy(self.list_map) 
+                aux_list_map[y][x+1] = 'T'
+                aux_list_map[y][x] = '0'
+
+                # Direcao tomada
+                direcao = 'RIGHT'
+
+                dic = {'new_taxi_position': new_position , 'new_list_board': aux_list_map , 'direction': direcao}
+                next_possible_positions.append(dic)
 
         # Esquerda
         if(x-1 >= 0):
             if(self.list_map[y][x-1] != "X"):
-                next_possible_positions.append([x-1,y])
+
+                # Nova posicao do taxi
+                new_position = [y, x-1]
+                
+                # Atualiza lista auxiliar do mapa
+                aux_list_map = copy.deepcopy(self.list_map) 
+                aux_list_map[y][x-1] = 'T'
+                aux_list_map[y][x] = '0'
+
+                # Direcao tomada
+                direcao = 'LEFT'
+
+                dic = {'new_taxi_position': new_position , 'new_list_board': aux_list_map , 'direction': direcao}
+                next_possible_positions.append(dic)
+
         # Cima
         if(y-1 >= 0):
-             if(self.list_map[y-1][x] != "X"):
-                next_possible_positions.append([x,y-1])
+            if(self.list_map[y-1][x] != "X"):
+
+                # Nova posicao do taxi
+                new_position = [y-1, x]
+                
+                # Atualiza lista auxiliar do mapa
+                aux_list_map = copy.deepcopy(self.list_map) 
+                aux_list_map[y-1][x] = 'T'
+                aux_list_map[y][x] = '0'
+
+                # Direcao tomada
+                direcao = 'UP'
+
+                dic = {'new_taxi_position': new_position , 'new_list_board': aux_list_map , 'direction': direcao}
+                next_possible_positions.append(dic)    
+
         # Baixo
         if(y+1 < self.height):
+
             if(self.list_map[y+1][x] != "X"):
-                next_possible_positions.append([x,y+1])
+
+                # Nova posicao do taxi
+                new_position = [y+1, x]
+                
+                # Atualiza lista auxiliar do mapa
+                aux_list_map = copy.deepcopy(self.list_map) 
+                aux_list_map[y+1][x] = 'T'
+                aux_list_map[y][x] = '0'
+
+                # Direcao tomada
+                direcao = 'DOWN'
+
+                dic = {'new_taxi_position': new_position , 'new_list_board': aux_list_map , 'direction': direcao}
+                next_possible_positions.append(dic)   
 
         return next_possible_positions
 
@@ -116,8 +172,7 @@ class State:
         self.f = 0     # Custo total
 
         self.hash = None
-        self.father = None  # Root (Init)
-        self.sucessors = []
+        self.sucessors = []    # ([Taxi position , Board sucessor , direção]) 
 
         # Verifica se taxi ja pegou passageiro
         if( (self.taxi.x == self.passager.x) and (self.taxi.y == self.passager.y)):
@@ -150,8 +205,8 @@ class State:
     def genarate_future_states(self):
         # Gera sucessores do estado (nós filhos)
         self.sucessors =  self.board.ways_possibilities()
-        print(self.sucessors)
+        # print(self.sucessors)
    
     def hash_function(self):
        # Gera chave única do estado atual:
-       return str(hash(self.board.str_map + self.taxi.get_posiiton() + str(self.passager.in_destinantion)))
+       return  hash(self.board.str_map + self.taxi.get_status() + self.passager.get_status() )

@@ -44,6 +44,9 @@ def read_informations(input_file):
     init_information['map'] = matrix_map_grid
     return init_information
 
+def compare_states(state1 , state2):
+    equal = ((state1.board.str_map == state2.board.str_map) and (state1.taxi.get_status() == state2.taxi.get_status()) and (state1.passager.get_status() == state2.passager.get_status()))
+    return equal
 
 def generateMap(init_list_map , type_map):
     '''
