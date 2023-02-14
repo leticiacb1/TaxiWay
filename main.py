@@ -36,14 +36,24 @@ import sys
 #--------------------------------------------------------
 
 def AEstrela(root):
-    configs = [root.config()] # estados que ja foram vistos
-    open_states = [root] # estados inexplorados
-    while len(open_states) > 0:
-        open_states.sort(key = lambda x: x.f(), reverse = True)
-        s = open_states.pop(0)
+    # estados que ja foram vistos
+    configs = [root.config()] 
 
+    # estados inexplorados
+    open_states = [root] 
+
+    # verifica se ainda há estado para explorar
+    while len(open_states) > 0:
+
+        # Sorteia state considerando a funcao de custo
+        open_states.sort(key = lambda x: x.f(), reverse = True)
+        s = open_states.pop()
+        
+        # goal
         if s.passenger.is_on_destiny:
             return s
+        
+        # Gera sucessores do estado com menor custo
         for sucessor in s.genarate_future_states():
             if sucessor.config() not in configs:
                 configs.append(sucessor.config())
@@ -65,17 +75,18 @@ def main(input_file):
     
     result = AEstrela(initial_state)
     if result is not None:
-        print('Achou solucao!')
-        print(len(result.path) - 1)
+        #print('Achou solucao!')
         for board in result.path:
             print(board)
-            print('-----------------------------------------')
+            print('\n-----------------------------------------\n')
+        
+        return result
     else:
-        print('Que pena, amor')
+        print('Oh tristeza')
+        return result
 
 if __name__ == '__main__': 
     
     # ---- Arquivo passado via terminal ----
-    input_file = sys.argv[1]
-    
+    input_file = sys.argv[1] 
     main(input_file)
