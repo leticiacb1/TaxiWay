@@ -38,37 +38,52 @@ def main():
     
     # ---- Lista para: guardar estados e custos dos nós abertos ----
     state_list = []
-    open_satates  = set()
+    open_states  = set()
 
     # ---- Cria Estado inicial ----
-    init_state = State(init_information)
-    init_state.actual_state()    
-    state_list.append(init_state)
+    s = State(init_information)
+    s.actual_state()    
 
-    # ---- Cria estado final ----
+    # ---- Cria estado Intermediário (Taxi com passageiro) ----
+    inter_information = {'dimensions' : init_information['dimensions'] , 
+                        'taxi' : init_information['person'],
+                         'person' :  init_information['person'] ,
+                         'destination' : init_information['destination'], 
+                         'map': generateMap(init_information['map'] , 'intermediate')}
+
+    inter_state = State(inter_information)
+    inter_state.actual_state()
+
+    # Verifica status:
+    #inter_state.taxi.get_status()
+    #inter_state.passager.get_status()
+
+    # ---- Cria estado final (Taxi e passageiro no destino )----
     final_information = {'dimensions' : init_information['dimensions'] , 
                         'taxi' : init_information['destination'],
                          'person' :  init_information['destination'] ,
                          'destination' : init_information['destination'], 
-                         'map': generateEndMap(init_information['map'])}
+                         'map': generateMap(init_information['map'] , 'final')}
 
     final_state = State(final_information)
-    final_state.actual_state()
+    #final_state.actual_state()
    
     # Verifica status:
     #final_state.taxi.get_status()
     #final_state.passager.get_status()
     
-    # ---- Cria sucessores do estado raiz ----
-    init_state.genarate_future_states()
-        
-    # Percorrendo todos os estados possíveis até encontrar o procurado
-    for s in state_list:
-        ...
-        
-    for tile in init_state.sucessors:
-        print(tile)
-
+    '''
+    while (s.hash_function() != final_state):
+        # ---- Cria sucessores do estado raiz ----
+        s.genarate_future_states()
+            
+        # Percorrendo todos os estados possíveis até encontrar o procurado
+        for state in state_list:
+            ...
+            
+        for tile in init_state.sucessors:
+            print(tile)
+    '''
     
 if __name__ == '__main__': 
     main()

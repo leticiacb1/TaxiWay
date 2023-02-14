@@ -17,10 +17,6 @@ class Taxi:
         print(f" with passager : {self.pick_up}")
         print(f" leave passager in destination: {self.leave_passager}")
 
-    def update_position(self , new_x , new_y):
-        self.x = new_x
-        self.y = new_y
-
     def get_passager(self):
         self.pick_up = True
 
@@ -42,7 +38,7 @@ class Passager:
         self.in_destinantion = False
     
     def get_status(self):
-        print(f"Passager start on [{self.x} , {self.y}]")
+        print(f"Passager on [{self.x} , {self.y}]")
         print(f"In taxi : {self.in_Taxi}")
         print(f"In destinantion : {self.in_destinantion}")
     

@@ -45,18 +45,20 @@ def read_informations(input_file):
     return init_information
 
 
-def generateEndMap(init_list_map):
-
-    end_list_map = []
+def generateMap(init_list_map , type_map):
+    '''
+    Gera mapas do estágio intermediário e final
+    '''
+    list_map = []
     for map_list in init_list_map:
-
         map_list = list(map(lambda x: x.replace('T', '0'), map_list))
-        map_list = list(map(lambda x: x.replace('P', '0'), map_list))
-        map_list = list(map(lambda x: x.replace('D', 'T'), map_list))
 
-        end_list_map.append(map_list)
+        if (type_map == 'final'):
+            map_list = list(map(lambda x: x.replace('P', '0'), map_list))
+            map_list = list(map(lambda x: x.replace('D', 'T'), map_list))
+        elif (type_map == 'intermediate'):
+            map_list = list(map(lambda x: x.replace('P', 'T'), map_list))
+            
+        list_map.append(map_list)
     
-    return end_list_map
-        
-def calculate_goal_state(init_information):
-   ... 
+    return list_map
