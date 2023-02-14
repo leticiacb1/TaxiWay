@@ -1,6 +1,8 @@
 # Desenhar board:
 #import gym
 
+from utils import *
+
 class Taxi:
     def __init__(self, start_posiiton):
 
@@ -10,7 +12,7 @@ class Taxi:
         self.pick_up = False
         self.leave_passager = False
         
-    def get_posiiton(self):
+    def get_position(self):
         print(f" Taxi on [{self.x} , {self.y}]")
 
     def update_position(self , new_x , new_y):
@@ -57,6 +59,9 @@ class Board:
         
         self.taxi = taxi_position
         self.passager = passager_position
+
+        # Mapa no formato string
+        self.str_map = return_str_map(list_board)
         
     def ways_possibilities(self):
         '''
@@ -67,7 +72,7 @@ class Board:
         
         x = self.taxi[0]
         y = self.taxi[1]
-        print(f" Taxi: x = {x} , y = {y}")
+        #print(f" Taxi: x = {x} , y = {y}")
         
         # Direita
         if(x+1 < self.width):
@@ -77,18 +82,17 @@ class Board:
         # Esquerda
         if(x-1 >= 0):
             if(self.list_map[y][x-1] != "X"):
-                 next_possible_positions.append([x-1,y])
+                next_possible_positions.append([x-1,y])
         # Cima
         if(y-1 >= 0):
              if(self.list_map[y-1][x] != "X"):
-        next_possible_positions.append([x,y-1])
+                next_possible_positions.append([x,y-1])
         # Baixo
         if(y+1 < self.height):
             if(self.list_map[y+1][x] != "X"):
-                 next_possible_positions.append([x,y+1])
+                next_possible_positions.append([x,y+1])
 
         return next_possible_positions
-
 
 class State:
     '''
@@ -98,11 +102,11 @@ class State:
     def __init__(self, init_information):
 
         # Elementos:
-        self.board = Board(init_information['dimensions'], init_information['root_map'] ,init_information['taxi'], init_information['person'])
+        self.board = Board(init_information['dimensions'], init_information['map'] ,init_information['taxi'], init_information['person'])
         self.taxi = Taxi(init_information['taxi'])
         self.passager = Passager(init_information['person'])
         self.destiny = init_information['destination']
-
+    
         self.h = 0     # Heuristica 
         self.g = 0     # State root
         self.f = 0     # Custo total
@@ -113,8 +117,9 @@ class State:
     
     def actual_state(self):
        # Mostra estado atual
+       self
        print()
-       print(self.board.list_map) 
+       print(self.board.str_map) 
        print()
 
     def h_n(self, x1, y1 , x2 , y2):
@@ -133,10 +138,9 @@ class State:
         # Gera sucessores do estado (nós filhos)
         self.sucessors =  self.board.ways_possibilities()
         print(self.sucessors)
-
+   
     def hash_function(self):
-       ...
        # Gera chave única do estado atual:
-       #return str(hash(self.board.str_map + self.taxi.get_posiiton() + str(self.passager.in_destinantion)))
+       return str(hash(self.board.str_map + self.taxi.get_posiiton() + str(self.passager.in_destinantion)))
 
 
