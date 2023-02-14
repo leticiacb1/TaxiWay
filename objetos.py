@@ -2,211 +2,223 @@
 #import gym
 
 from utils import *
-import copy
+from copy import deepcopy
 
-class Taxi:
-    def __init__(self, start_posiiton):
+class Entity:
+    def __init__(self, x, y, identifier='0'):
+        self.x = x
+        self.y = y
+        self.identifier = identifier
 
-        self.x = start_posiiton[0]
-        self.y = start_posiiton[1]
+    def __eq__(self, other):
+        return (self.x == other.x and self.y == other.y)
 
-        self.pick_up = False
-        self.leave_passager = False
-        
-    def get_status(self):
-        str_status = f" Taxi on [{self.x} , {self.y}]\n With passager : {self.pick_up}\n Leave passager in destination: {self.leave_passager}"
-        return str_status
+    def __call__(self):
+        return f'{self.identifier} at ({self.x}, {self.y})'
 
-    def get_passager(self):
-        self.pick_up = True
+class Taxi(Entity):
+    def __init__(self, x, y):
+        super().__init__(x, y, 'T')
+        self.passenger_on_boarding = False
 
-    def drop_passager(self):
-        
-        if(self.pick_up):
-            self.pick_up = False
-            self.leave_passager = True
-        else:
-            print('[ERROR] : Primeiro pegue o passageiro!')
+class Passenger(Entity):
+    def __init__(self, x, y):
+        super().__init__(x, y, 'P')
+        self.is_on_destiny = False
 
-class Passager:
-    def __init__(self, start_posiiton):
-
-        self.x = start_posiiton[0]
-        self.y = start_posiiton[1]
-
-        self.in_Taxi  = False
-        self.in_destinantion = False
-    
-    def get_status(self):
-        str_status = f" Passager on [{self.x} , {self.y}]\n In taxi : {self.in_Taxi}\n In destinantion : {self.in_destinantion}"
-        return str_status
-    
-    def taxi_pick_up(self):
-        self.in_Taxi = True
-
-    def taxi_leave_up(self):
-        
-        if(self.in_Taxi):
-            self.in_Taxi = False
-            self.in_destinantion = True
-        else:
-            print('[ERROR] : Primeiro o passageiro deve esta no taxi!')
+class Destiny(Entity):
+    def __init__(self, x, y):
+        super().__init__(x, y, 'D')
 
 class Board:
-    def __init__(self, dimensions, list_board , taxi_position , passager_position):
+    def __init__(self, width, height, matrix):
         
-        self.width = dimensions[0]
-        self.height = dimensions[1]
-        
-        self.list_map = list_board
-        
-        self.taxi = taxi_position
-        self.passager = passager_position
+        self.width = width
+        self.height = height
+        self.matrix = matrix
 
-        # Mapa no formato string
-        self.str_map = return_str_map(list_board)
-        
-    def ways_possibilities(self):
-        '''
-        De acordo com a posicão do taxi, verificar as possibilidades de caminho (possiveis sucessores do mapa)
-        Retorno : [{ Taxi position , Board sucessor , direção }]
-        '''
-        
-        next_possible_positions = []
-        
-        x = self.taxi[0]
-        y = self.taxi[1]
-        #print(f" Taxi: x = {x} , y = {y}")
-        
-        # Configuração do tabuleiro caso:
-        # Direita
-        if(x+1 < self.width):
-            if(self.list_map[y][x+1] != "X"):
-                
-                # Nova posicao do taxi
-                new_position = [x+1, y]
-                
-                # Atualiza lista auxiliar do mapa
-                aux_list_map = copy.deepcopy(self.list_map) 
-                aux_list_map[y][x+1] = 'T'
-                aux_list_map[y][x] = '0'
-
-                # Direcao tomada
-                direcao = 'RIGHT'
-
-                dic = {'new_taxi_position': new_position , 'new_list_board': aux_list_map , 'direction': direcao}
-                next_possible_positions.append(dic)
-
-        # Esquerda
-        if(x-1 >= 0):
-            if(self.list_map[y][x-1] != "X"):
-
-                # Nova posicao do taxi
-                new_position = [x-1, y]
-                
-                # Atualiza lista auxiliar do mapa
-                aux_list_map = copy.deepcopy(self.list_map) 
-                aux_list_map[y][x-1] = 'T'
-                aux_list_map[y][x] = '0'
-
-                # Direcao tomada
-                direcao = 'LEFT'
-
-                dic = {'new_taxi_position': new_position , 'new_list_board': aux_list_map , 'direction': direcao}
-                next_possible_positions.append(dic)
-
-        # Cima
-        if(y-1 >= 0):
-            if(self.list_map[y-1][x] != "X"):
-
-                # Nova posicao do taxi
-                new_position = [x, y-1]
-                
-                # Atualiza lista auxiliar do mapa
-                aux_list_map = copy.deepcopy(self.list_map) 
-                aux_list_map[y-1][x] = 'T'
-                aux_list_map[y][x] = '0'
-
-                # Direcao tomada
-                direcao = 'UP'
-
-                dic = {'new_taxi_position': new_position , 'new_list_board': aux_list_map , 'direction': direcao}
-                next_possible_positions.append(dic)    
-
-        # Baixo
-        if(y+1 < self.height):
-
-            if(self.list_map[y+1][x] != "X"):
-
-                # Nova posicao do taxi
-                new_position = [x, y+1]
-                
-                # Atualiza lista auxiliar do mapa
-                aux_list_map = copy.deepcopy(self.list_map) 
-                aux_list_map[y+1][x] = 'T'
-                aux_list_map[y][x] = '0'
-
-                # Direcao tomada
-                direcao = 'DOWN'
-
-                dic = {'new_taxi_position': new_position , 'new_list_board': aux_list_map , 'direction': direcao}
-                next_possible_positions.append(dic)   
-
-        return next_possible_positions
+    def print_board(self):
+        print(format_matrix(self.matrix))
 
 class State:
     '''
     Classe que representa o estado atual do ambiente, agente e tudo que compoem o problema.
     '''
 
-    def __init__(self, init_information):
-
+    def __init__(self, env):
         # Elementos:
-        self.board = Board(init_information['dimensions'], init_information['map'] ,init_information['taxi'], init_information['person'])
-        self.taxi = Taxi(init_information['taxi'])
-        self.passager = Passager(init_information['person'])
-        self.destiny = init_information['destination']
+        self.board = Board(env['width'], env['height'], env['matrix'])
+        self.taxi = Taxi(env['x_taxi'], env['y_taxi'])
+        self.passenger = Passenger(env['x_passenger'], env['y_passenger'])
+        self.destiny = Destiny(env['x_destiny'], env['y_destiny'])
     
-        self.h = 0     # Heuristica 
-        self.g = 0     # State root
-        self.f = 0     # Custo total
+        self.g = env['g'] if 'g' in env.keys() else 0     # State root
+        self.sucessors = []
+        self.path = env['path'] if 'path' in env.keys() else []
 
-        self.hash = None
-        self.sucessors = []    # ([Taxi position , Board sucessor , direção]) 
+    def h(self):
+        if self.taxi.passenger_on_boarding:
+            return abs(self.taxi.x - self.destiny.x) + abs(self.taxi.y - self.destiny.y)
+        return abs(self.taxi.x - self.passenger.x) + abs(self.taxi.y - self.passenger.y)
 
-        # Verifica se taxi ja pegou passageiro
-        if( (self.taxi.x == self.passager.x) and (self.taxi.y == self.passager.y)):
-            self.taxi.get_passager()
-            self.passager.taxi_pick_up()
-
-        # Caso o taxi já esteja no destino com o passageiro
-        if((self.taxi.pick_up and self.passager.in_Taxi) and ( (self.taxi.x == self.destiny[0]) and (self.taxi.y == self.destiny[1]))):
-            self.taxi.drop_passager()
-            self.passager.taxi_leave_up()
-    
-    def actual_state(self):
-       # Mostra estado atual
-       print()
-       print(self.board.str_map) 
-       print()
-
-    def h_n(self, o , d):
-        # MANHATTAN distance
-        self.h = abs(o[0] - d[0]) + abs(o[1] - d[1])
-
-    def g_n(self, past_value):
-        # Custo do Tile atual em relação ao inicio.
-        self.g = 1 + past_value
-
-    def f_n (self):
+    def f(self):
         # Custo total do estado
-        self.f = self.h + self.g
+        return self.h() + self.g
+
+    def config(self):
+        str_map = ''.join([''.join(row) for row in self.board.matrix])
+        return hash(f'{str_map}{int(self.taxi.passenger_on_boarding)}{int(self.passenger.is_on_destiny)}')
 
     def genarate_future_states(self):
-        # Gera sucessores do estado (nós filhos)
-        self.sucessors =  self.board.ways_possibilities()
-        # print(self.sucessors)
-   
-    def hash_function(self):
-       # Gera chave única do estado atual:
-       return  hash(self.board.str_map + self.taxi.get_status() + self.passager.get_status() )
+        # Direita
+        if(self.taxi.x + 1 <= self.board.width and self.board.matrix[self.taxi.y][self.taxi.x + 1] != 'X'):
+
+            new_matrix = deepcopy(self.board.matrix)
+            if self.taxi == self.destiny:
+                new_matrix[self.taxi.y][self.taxi.x] = 'D'
+            else:
+                new_matrix[self.taxi.y][self.taxi.x] = '0'
+
+            if self.taxi.x + 1 == self.destiny.x and self.taxi.y == self.destiny.y:
+                if not self.taxi.passenger_on_boarding:
+                    new_matrix[self.taxi.y][self.taxi.x + 1] = 'T+D'
+                else:
+                    new_matrix[self.taxi.y][self.taxi.x + 1] = 'T+P+D'
+            elif self.taxi.x + 1 == self.passenger.x and self.taxi.y == self.passenger.y:
+                new_matrix[self.taxi.y][self.taxi.x + 1] = 'T+P'
+            else:
+                if not self.taxi.passenger_on_boarding:
+                    new_matrix[self.taxi.y][self.taxi.x + 1] = 'T'
+                else:
+                    new_matrix[self.taxi.y][self.taxi.x + 1] = 'T+P'
+
+            env = {
+                'width': self.board.width, 'height': self.board.height, 'matrix': new_matrix,
+                'x_taxi': self.taxi.x + 1, 'y_taxi': self.taxi.y,
+                'x_passenger': self.passenger.x + 1 if self.taxi.passenger_on_boarding else self.passenger.x, 'y_passenger': self.passenger.y,
+                'x_destiny': self.destiny.x, 'y_destiny': self.destiny.y,
+                'g': self.g + 1, 'path': self.path + [format_matrix(new_matrix)]
+            }
+            self.sucessors.append(State(env))
+
+        # Esquerda
+        if(self.taxi.x - 1 > 0 and self.board.matrix[self.taxi.y][self.taxi.x - 1] != 'X'):
+
+            new_matrix = deepcopy(self.board.matrix)
+            if self.taxi == self.destiny:
+                new_matrix[self.taxi.y][self.taxi.x] = 'D'
+            else:
+                new_matrix[self.taxi.y][self.taxi.x] = '0'
+
+            if self.taxi.x - 1 == self.destiny.x and self.taxi.y == self.destiny.y:
+                if not self.taxi.passenger_on_boarding:
+                    new_matrix[self.taxi.y][self.taxi.x - 1] = 'T+D'
+                else:
+                    new_matrix[self.taxi.y][self.taxi.x - 1] = 'T+P+D'
+            elif self.taxi.x - 1 == self.passenger.x and self.taxi.y == self.passenger.y:
+                new_matrix[self.taxi.y][self.taxi.x - 1] = 'T+P'
+            else:
+                if not self.taxi.passenger_on_boarding:
+                    new_matrix[self.taxi.y][self.taxi.x - 1] = 'T'
+                else:
+                    new_matrix[self.taxi.y][self.taxi.x - 1] = 'T+P'
+
+            env = {
+                'width': self.board.width, 'height': self.board.height, 'matrix': new_matrix,
+                'x_taxi': self.taxi.x - 1, 'y_taxi': self.taxi.y,
+                'x_passenger': self.passenger.x - 1 if self.taxi.passenger_on_boarding else self.passenger.x, 'y_passenger': self.passenger.y,
+                'x_destiny': self.destiny.x, 'y_destiny': self.destiny.y,
+                'g': self.g + 1, 'path': self.path + [format_matrix(new_matrix)]
+            }
+            self.sucessors.append(State(env))  
+
+        # Cima
+        if(self.taxi.y - 1 > 0 and self.board.matrix[self.taxi.y - 1][self.taxi.x] != 'X'):
+
+            new_matrix = deepcopy(self.board.matrix)
+            if self.taxi == self.destiny:
+                new_matrix[self.taxi.y][self.taxi.x] = 'D'
+            else:
+                new_matrix[self.taxi.y][self.taxi.x] = '0'
+
+            if self.taxi.x == self.destiny.x and self.taxi.y - 1 == self.destiny.y:
+                if not self.taxi.passenger_on_boarding:
+                    new_matrix[self.taxi.y - 1][self.taxi.x] = 'T+D'
+                else:
+                    new_matrix[self.taxi.y - 1][self.taxi.x] = 'T+P+D'
+            elif self.taxi.x == self.passenger.x and self.taxi.y - 1 == self.passenger.y:
+                new_matrix[self.taxi.y - 1][self.taxi.x] = 'T+P'
+            else:
+                if not self.taxi.passenger_on_boarding:
+                    new_matrix[self.taxi.y - 1][self.taxi.x] = 'T'
+                else:
+                    new_matrix[self.taxi.y - 1][self.taxi.x] = 'T+P'
+
+            env = {
+                'width': self.board.width, 'height': self.board.height, 'matrix': new_matrix,
+                'x_taxi': self.taxi.x , 'y_taxi': self.taxi.y - 1,
+                'x_passenger': self.passenger.x, 'y_passenger': self.passenger.y - 1 if self.taxi.passenger_on_boarding else self.passenger.y,
+                'x_destiny': self.destiny.x, 'y_destiny': self.destiny.y,
+                'g': self.g + 1, 'path': self.path + [format_matrix(new_matrix)]
+            }
+            self.sucessors.append(State(env)) 
+
+        # Baixo
+        if(self.taxi.y + 1 <= self.board.height and self.board.matrix[self.taxi.y + 1][self.taxi.x] != 'X'):
+
+            new_matrix = deepcopy(self.board.matrix)
+            if self.taxi == self.destiny:
+                new_matrix[self.taxi.y][self.taxi.x] = 'D'
+            else:
+                new_matrix[self.taxi.y][self.taxi.x] = '0'
+
+            if self.taxi.x == self.destiny.x and self.taxi.y + 1 == self.destiny.y:
+                if not self.taxi.passenger_on_boarding:
+                    new_matrix[self.taxi.y + 1][self.taxi.x] = 'T+D'
+                else:
+                    new_matrix[self.taxi.y + 1][self.taxi.x] = 'T+P+D'
+            elif self.taxi.x == self.passenger.x and self.taxi.y + 1 == self.passenger.y:
+                new_matrix[self.taxi.y + 1][self.taxi.x] = 'T+P'
+            else:
+                if not self.taxi.passenger_on_boarding:
+                    new_matrix[self.taxi.y + 1][self.taxi.x] = 'T'
+                else:
+                    new_matrix[self.taxi.y + 1][self.taxi.x] = 'T+P'
+
+            env = {
+                'width': self.board.width, 'height': self.board.height, 'matrix': new_matrix,
+                'x_taxi': self.taxi.x , 'y_taxi': self.taxi.y + 1,
+                'x_passenger': self.passenger.x, 'y_passenger': self.passenger.y + 1 if self.taxi.passenger_on_boarding else self.passenger.y,
+                'x_destiny': self.destiny.x, 'y_destiny': self.destiny.y,
+                'g': self.g + 1, 'path': self.path + [format_matrix(new_matrix)]
+            }
+            self.sucessors.append(State(env))
+
+        # Pega passageiro
+        if(self.taxi == self.passenger and not self.taxi.passenger_on_boarding):
+            env = {
+                'width': self.board.width, 'height': self.board.height, 'matrix': self.board.matrix,
+                'x_taxi': self.taxi.x , 'y_taxi': self.taxi.y,
+                'x_passenger': self.passenger.x, 'y_passenger': self.passenger.y,
+                'x_destiny': self.destiny.x, 'y_destiny': self.destiny.y, 'g': self.g, 'path': self.path
+            }
+
+            s = State(env)
+            s.taxi.passenger_on_boarding = True
+            self.sucessors.append(s)
+        
+        # Deixar passageiro
+        if(self.taxi == self.destiny and self.taxi.passenger_on_boarding):
+            env = {
+                'width': self.board.width, 'height': self.board.height, 'matrix': self.board.matrix,
+                'x_taxi': self.taxi.x , 'y_taxi': self.taxi.y,
+                'x_passenger': self.passenger.x, 'y_passenger': self.passenger.y,
+                'x_destiny': self.destiny.x, 'y_destiny': self.destiny.y, 'g': self.g, 'path': self.path
+            }
+
+            s = State(env)
+            s.taxi.passenger_on_boarding = False
+            s.passenger.is_on_destiny = True
+            self.sucessors.append(s)
+
+        return self.sucessors
