@@ -102,7 +102,7 @@ class Board:
             if(self.list_map[y][x-1] != "X"):
 
                 # Nova posicao do taxi
-                new_position = [y, x-1]
+                new_position = [x-1, y]
                 
                 # Atualiza lista auxiliar do mapa
                 aux_list_map = copy.deepcopy(self.list_map) 
@@ -120,7 +120,7 @@ class Board:
             if(self.list_map[y-1][x] != "X"):
 
                 # Nova posicao do taxi
-                new_position = [y-1, x]
+                new_position = [x, y-1]
                 
                 # Atualiza lista auxiliar do mapa
                 aux_list_map = copy.deepcopy(self.list_map) 
@@ -139,7 +139,7 @@ class Board:
             if(self.list_map[y+1][x] != "X"):
 
                 # Nova posicao do taxi
-                new_position = [y+1, x]
+                new_position = [x, y+1]
                 
                 # Atualiza lista auxiliar do mapa
                 aux_list_map = copy.deepcopy(self.list_map) 
@@ -190,9 +190,9 @@ class State:
        print(self.board.str_map) 
        print()
 
-    def h_n(self, x1, y1 , x2 , y2):
+    def h_n(self, o , d):
         # MANHATTAN distance
-        self.h = abs(x2 - x1) + abs(y2 - y1)
+        self.h = abs(o[0] - d[0]) + abs(o[1] - d[1])
 
     def g_n(self, past_value):
         # Custo do Tile atual em relação ao inicio.

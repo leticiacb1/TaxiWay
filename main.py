@@ -72,36 +72,69 @@ def main():
     # ----- Encontrando melhor distancia até o passageiro -----
     # ---------------------------------------------------------
     
-    # ---- Guarda hash de estados já "computados" - set() ----
-    state_list = {s.hash_function()}
+    # ---- Guarda todos os estados já descobertos ----
+    state_list = {s}
     #print(s.hash_function())
 
     # ---- Guardar estados ordenados pela funcao de custo ----
-    open_cost_states  = []
+    open_states_order  = []
 
-    while (s.hash_function() != inter_state.hash_function()):
+    while (not compare_states(s, inter_state)):
         
         # Gera possições futuras do tabuleiro (sucessores do nó):
         s.genarate_future_states()
 
         for sc in s.sucessors:
 
-            print(sc)
             # Cria estados sucessores:
-            #s_sucessors = State()
+            info =  {'dimensions' : init_information['dimensions'], 
+                    'taxi' : sc['new_taxi_position'],
+                    'person' :  init_information['person'],
+                    'destination' : init_information['person'], 
+                    'map': sc['new_list_board']}
 
-            #print(x,y)
-            # Caso nó não visitado:
-            #if (sc.hash_function() not in state_list):
+            st = State(info)
+            #st.actual_state()
 
-                # Adiciona estado 
-                #state_list.add(sc.hash_function())
+            # Verfica se estado já não foi visitado antes:
+            state_closed = False
+            for a in state_list:
+                if(compare_states(st, a)):
+                    state_closed  = True
 
-        break
- 
+            # Calcula custo
+            if(not state_closed):
+                 
+                st.h_n(info['taxi'], info['destination'])
+                st.g_n(s.g)
+                st.f_n()
+                
+                open_states_order.append(st)
+                state_list.add(st)
+
+        # Ordenando os objetos com key = custo
+        # Proximo estado a ser visitado (o de menor custo)
+        sorted(open_states_order, key=lambda b: b.f)
+        s = open_states_order.pop(0)
+
+        
+        print("\n--------------- PROXIMO ----------------\n")
+        print(s.f)
+        s.actual_state()
+        print("Todos os estados: ")
+        for i in state_list:
+            print(i.taxi.get_status())
+            print("-----")
+        print("> Estados abertos: ")
+        for j in open_states_order:
+            print(i.taxi.get_status())
+            print("-----")
+        print("-------------------------------------------")
+        
     # ---------------------------------------------------------
     # ----- Encontrando melhor distancia até o destino -----
     # ---------------------------------------------------------
-    
+    # ...
+
 if __name__ == '__main__': 
     main()
