@@ -48,59 +48,46 @@ class Passager:
         self.in_Taxi = False
 
 class Board:
-    def __init__(self, dimensions, string_board , taxi_position , passager_position):
+    def __init__(self, dimensions, list_board , taxi_position , passager_position):
         
         self.width = dimensions[0]
         self.height = dimensions[1]
         
-        self.str_map = string_board
+        self.list_map = list_board
         
         self.taxi = taxi_position
         self.passager = passager_position
         
-        # None = Root
-        self.father = None
-        self.sucessors = []
-
     def ways_possibilities(self):
         '''
         De acordo com a posicão do taxi, verificar as possibilidades de caminho (possiveis sucessores do mapa)
         '''
         
-        line = 0;
-        column = 0
-
         next_possible_positions = []
+        
+        x = self.taxi[0]
+        y = self.taxi[1]
+        print(f" Taxi: x = {x} , y = {y}")
+        
+        # Direita
+        if(x+1 < self.width):
+            if(self.list_map[y][x+1] != "X"):
+                next_possible_positions.append([x+1,y])
 
-        for tile in self.str_map:
-            
-            if(tile == '\n'):
-                line+=1
-                column = 0
-
-            else:
-                if (tile == 'T'):
-
-                    # Verificando Direita:
-                    if( self.str_map[line][column+1] != 'X') and (column + 1 < self.width):
-                        next_possible_positions.append([line, column+1])
-                    
-                    elif( self.str_map[line+1][column] != 'X') and (line + 1 < self.height):
-                        # Verificando Baixo
-                        next_possible_positions.append([line+1,column])
-                    
-                    elif (self.str_map[line][column-1] != 'X') and (column- 1 >= 0) :
-                        # Verificando Esquerda
-                        next_possible_positions.append([line, column - 1])
-
-                    elif (self.str_map[line-1, column] != 'X')  and (line - 1 >= 0):
-                        # Verificando Cima
-                        next_possible_positions.append([line-1, column]) 
-
-                column+=1
+        # Esquerda
+        if(x-1 >= 0):
+            if(self.list_map[y][x-1] != "X"):
+                 next_possible_positions.append([x-1,y])
+        # Cima
+        if(y-1 >= 0):
+             if(self.list_map[y-1][x] != "X"):
+        next_possible_positions.append([x,y-1])
+        # Baixo
+        if(y+1 < self.height):
+            if(self.list_map[y+1][x] != "X"):
+                 next_possible_positions.append([x,y+1])
 
         return next_possible_positions
-
 
 
 class State:
@@ -113,13 +100,22 @@ class State:
         # Elementos:
         self.board = Board(init_information['dimensions'], init_information['root_map'] ,init_information['taxi'], init_information['person'])
         self.taxi = Taxi(init_information['taxi'])
-        self.person = Passager(init_information['person'])
+        self.passager = Passager(init_information['person'])
         self.destiny = init_information['destination']
 
         self.h = 0     # Heuristica 
         self.g = 0     # State root
         self.f = 0     # Custo total
 
+        self.hash = None
+        self.father = None  # Root (Init)
+        self.sucessors = []
+    
+    def actual_state(self):
+       # Mostra estado atual
+       print()
+       print(self.board.list_map) 
+       print()
 
     def h_n(self, x1, y1 , x2 , y2):
         # MANHATTAN distance
@@ -132,4 +128,15 @@ class State:
     def f_n (self):
         # Custo total do estado
         self.f = self.h + self.g
+
+    def genarate_future_states(self):
+        # Gera sucessores do estado (nós filhos)
+        self.sucessors =  self.board.ways_possibilities()
+        print(self.sucessors)
+
+    def hash_function(self):
+       ...
+       # Gera chave única do estado atual:
+       #return str(hash(self.board.str_map + self.taxi.get_posiiton() + str(self.passager.in_destinantion)))
+
 
