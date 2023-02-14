@@ -15,7 +15,7 @@ def return_str_map(matrix):
 
 def read_informations(input_file):
     init_information = {}
-
+    matrix_map_grid = []
     with open(input_file,'r') as f:
         
         num_line = 0
@@ -47,8 +47,16 @@ def read_informations(input_file):
 
 def generateEndMap(init_list_map):
 
+    end_list_map = []
     for map_list in init_list_map:
-        print(map_list)
 
+        map_list = list(map(lambda x: x.replace('T', '0'), map_list))
+        map_list = list(map(lambda x: x.replace('P', '0'), map_list))
+        map_list = list(map(lambda x: x.replace('D', 'T'), map_list))
+
+        end_list_map.append(map_list)
+    
+    return end_list_map
+        
 def calculate_goal_state(init_information):
    ... 

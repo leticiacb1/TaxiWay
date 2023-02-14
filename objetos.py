@@ -12,8 +12,10 @@ class Taxi:
         self.pick_up = False
         self.leave_passager = False
         
-    def get_position(self):
+    def get_status(self):
         print(f" Taxi on [{self.x} , {self.y}]")
+        print(f" with passager : {self.pick_up}")
+        print(f" leave passager in destination: {self.leave_passager}")
 
     def update_position(self , new_x , new_y):
         self.x = new_x
@@ -42,12 +44,18 @@ class Passager:
     def get_status(self):
         print(f"Passager start on [{self.x} , {self.y}]")
         print(f"In taxi : {self.in_Taxi}")
+        print(f"In destinantion : {self.in_destinantion}")
     
     def taxi_pick_up(self):
         self.in_Taxi = True
 
     def taxi_leave_up(self):
-        self.in_Taxi = False
+        
+        if(self.in_Taxi):
+            self.in_Taxi = False
+            self.in_destinantion = True
+        else:
+            print('[ERROR] : Primeiro o passageiro deve esta no taxi!')
 
 class Board:
     def __init__(self, dimensions, list_board , taxi_position , passager_position):
@@ -114,10 +122,19 @@ class State:
         self.hash = None
         self.father = None  # Root (Init)
         self.sucessors = []
+
+        # Verifica se taxi ja pegou passageiro
+        if( (self.taxi.x == self.passager.x) and (self.taxi.y == self.passager.y)):
+            self.taxi.get_passager()
+            self.passager.taxi_pick_up()
+
+        # Caso o taxi já esteja no destino com o passageiro
+        if((self.taxi.pick_up and self.passager.in_Taxi) and ( (self.taxi.x == self.destiny[0]) and (self.taxi.y == self.destiny[1]))):
+            self.taxi.drop_passager()
+            self.passager.taxi_leave_up()
     
     def actual_state(self):
        # Mostra estado atual
-       self
        print()
        print(self.board.str_map) 
        print()
@@ -142,5 +159,3 @@ class State:
     def hash_function(self):
        # Gera chave única do estado atual:
        return str(hash(self.board.str_map + self.taxi.get_posiiton() + str(self.passager.in_destinantion)))
-
-

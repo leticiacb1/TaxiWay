@@ -32,14 +32,11 @@ def main():
     # ---- Arquivo passado via terminal ----
     input_file = sys.argv[1]
     
-    # ---- Variaveis ----
-    information = {}
-    matrix_map_grid = []
-    
     # ---- Abre arquivo txt para pegar informações do problema ----
-    information = read_informations(input_file)
+    init_information = {}
+    init_information = read_informations(input_file)
     
-    # ---- Lista para guardar estados e custos dos nós abertos ----
+    # ---- Lista para: guardar estados e custos dos nós abertos ----
     state_list = []
     open_satates  = set()
 
@@ -48,11 +45,19 @@ def main():
     init_state.actual_state()    
     state_list.append(init_state)
 
-    # ---- Cria estado final
-    final_information = {'dimensions' : init_state , 
+    # ---- Cria estado final ----
+    final_information = {'dimensions' : init_information['dimensions'] , 
                         'taxi' : init_information['destination'],
-                         'person' :  init_information['destination'] , 
+                         'person' :  init_information['destination'] ,
+                         'destination' : init_information['destination'], 
                          'map': generateEndMap(init_information['map'])}
+
+    final_state = State(final_information)
+    final_state.actual_state()
+   
+    # Verifica status:
+    #final_state.taxi.get_status()
+    #final_state.passager.get_status()
     
     # ---- Cria sucessores do estado raiz ----
     init_state.genarate_future_states()
@@ -61,7 +66,6 @@ def main():
     for s in state_list:
         ...
         
-
     for tile in init_state.sucessors:
         print(tile)
 
