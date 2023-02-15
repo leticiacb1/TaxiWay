@@ -8,7 +8,7 @@ Ele busca o caminho em um grafo de um vértice inicial até um vértice final.
 
 #### Divisão do código 🕺️
 
-A branch principal (main) contém a implementação do algorítimo com as devidas implementações de teste. Mas recomenda-se fortementa a rodagem e a visualização do código contida na [branch Felipe](https://github.com/insper-classroom/taxi-driver-without-reinforcement-learning-taxiway/tree/Felipe), que possui uma **animação implementada com pygame** mostrando da busca do algorítimo em ação!
+A branch principal (main) contém a implementação do algorítimo com as devidas implementações de teste. Mas recomenda-se fortementa a rodagem e a visualização do código contida na [branch Felipe](https://github.com/insper-classroom/taxi-driver-without-reinforcement-learning-taxiway/tree/Felipe), que possui uma `animação implementada com pygame` mostrando a busca do algorítimo em ação!
 
 #### Configurações ⚙️
 
