@@ -34,6 +34,23 @@ X,D,0,0,X
 
 X,X,X,X,X  
 ```
+Legenda :
+```bash
+0 -> Caminho livre
+
+X -> Parede
+
+T -> Taxi
+
+P -> Person
+
+D -> Destino
+
+T+P -> Passageiro no Taxi
+
+T+P+D -> (Passageiro + Taxi) no Destino
+```
+
 #### Rodagem do código 👩‍💻️
 
 * Rodar testes:
