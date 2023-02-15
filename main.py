@@ -77,8 +77,9 @@ def main(input_file):
     if result is not None:
         #print('Achou solucao!')
         for board in result.path:
-            print(board)
-            print('\n-----------------------------------------\n')
+            ...
+            #print(board)
+            #print('\n-----------------------------------------\n')
         
         return result
     else:

@@ -154,7 +154,7 @@ class State:
                 else:
                     new_matrix[self.taxi.y - 1][self.taxi.x] = 'T+P'
 
-            env = {
+            env = { 
                 'width': self.board.width, 'height': self.board.height, 'matrix': new_matrix,
                 'x_taxi': self.taxi.x , 'y_taxi': self.taxi.y - 1,
                 'x_passenger': self.passenger.x, 'y_passenger': self.passenger.y - 1 if self.taxi.passenger_on_boarding else self.passenger.y,
