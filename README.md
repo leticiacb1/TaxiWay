@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 #### Limitações do Código 📌️
 
-O presente projeto não apresenta garantia de solução a partir de mapas com dimensões superiores a 20x20 , podendo não chegar a melhor configuração de caminho nessas situações. O mesmo também não possui preparo para resolver situações em que o agente está "preso" rodeado de paredes e sem possibilidade de movimentaç
+O presente projeto não apresenta garantia de solução a partir de mapas com dimensões superiores a 20x20 , podendo não chegar a melhor configuração de caminho nessas situações. O mesmo também não possui preparo para resolver situações em que o agente está "preso" rodeado de paredes e sem possibilidade de movimento.
 
 #### Formato input esperado 📌️
 
